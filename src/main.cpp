@@ -14,7 +14,7 @@ Ticker displayTicker;
 const uint8_t g_displayFlushGpio[3] = {13, 12, 14};
 uint16_t g_displayData[3] = {0x01ff, 0x007f, 0x7fff};
 
-StaticJsonDocument<256> receivedData;
+StaticJsonDocument<512> receivedData;
 
 void displayFlush()
 {
@@ -93,7 +93,7 @@ void loop()
         WiFiClient client;
         HTTPClient http;
 
-        if (http.begin(client, "http://192.168.2.3:7766/getdata")) {
+        if (http.begin(client, "http://iot.vvzero.com/topuino/getdata?UUID=1e788f28-7a5e-4888-96ff-71ab8b1876f8")) {
             int httpCode = http.GET();
             if (httpCode == HTTP_CODE_OK) {
                 DeserializationError jsonError = deserializeJson(receivedData, http.getString().c_str());
@@ -102,9 +102,9 @@ void loop()
                     Serial.print(F("deserializeJson() failed: "));
                     Serial.println(jsonError.f_str());
                 } else {
-                    g_displayData[0] = PercentToBitmap(receivedData["CPU"]);
-                    g_displayData[1] = PercentToBitmap(receivedData["MEM"]);
-                    g_displayData[2] = PercentToBitmap(receivedData["DISK"]);
+                    g_displayData[0] = PercentToBitmap(receivedData["CPU_PERCENT"]);
+                    g_displayData[1] = PercentToBitmap(receivedData["MEM_PERCENT"]);
+                    g_displayData[2] = PercentToBitmap(receivedData["DISK_PERCENT"]);
                 }
             }
             http.end();
