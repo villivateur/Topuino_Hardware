@@ -1,38 +1,29 @@
 #include <Arduino.h>
-#include <Wire.h>
+#include <TM1638plus.h>
 #include <ESP8266WiFi.h>
-#include <Ticker.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <ArduinoJson.h>
 
-IPAddress local_IP(192,168,4,1);
-IPAddress gateway(192,168,4,1);
-IPAddress subnet(255,255,255,0);
-
-Ticker displayTicker;
-const uint8_t g_displayFlushGpio[3] = {13, 12, 14};
-uint16_t g_displayData[3] = {0x01ff, 0x007f, 0x7fff};
+#define STROBE_TM1 13
+#define STROBE_TM2 12 // strobe = GPIO connected to strobe line of module
+#define STROBE_TM3 14
+#define CLOCK_TM 4      // clock = GPIO connected to clock line of module
+#define DIO_TM 5        // data = GPIO connected to data line of module
+bool high_freq = false; //default false, If using a high freq CPU > ~100 MHZ set to true.
 
 StaticJsonDocument<512> receivedData;
 
-void displayFlush()
-{
-    static uint8_t displayLine = 0;
-
-    digitalWrite(g_displayFlushGpio[displayLine], LOW);
-    displayLine++;
-    if (displayLine == 3) displayLine = 0;
-    Wire.beginTransmission(0x20);
-    Wire.write(0x02);
-    Wire.write((uint8_t)(g_displayData[displayLine] % 0x100));
-    Wire.write((uint8_t)(g_displayData[displayLine] / 0x100));
-    Wire.endTransmission();
-    digitalWrite(g_displayFlushGpio[displayLine], HIGH);
-}
+// Constructor object (GPIO STB , GPIO CLOCK , GPIO DIO, use high freq MCU)
+TM1638plus tm1(STROBE_TM1, CLOCK_TM, DIO_TM, high_freq);
+TM1638plus tm2(STROBE_TM2, CLOCK_TM, DIO_TM, high_freq);
+TM1638plus tm3(STROBE_TM3, CLOCK_TM, DIO_TM, high_freq);
 
 void setup()
 {
+    tm1.displayBegin();
+    tm2.displayBegin();
+    tm3.displayBegin();
     Serial.begin(115200);
     Serial.println();
 
@@ -55,21 +46,6 @@ void setup()
 
     Serial.print("Connected, IP address: ");
     Serial.println(WiFi.localIP());
-
-    Wire.begin(4, 5);
-
-    Wire.beginTransmission(0x20);
-    Wire.write(0x06);
-    Wire.write(0x00);
-    Wire.write(0x00);
-    Wire.endTransmission();
-    Wire.beginTransmission(0x20);
-    Wire.write(0x02);
-    Wire.write(0xff);
-    Wire.write(0xff);
-    Wire.endTransmission();
-
-    displayTicker.attach(0.005, displayFlush);
 }
 
 uint16_t PercentToBitmap(uint8_t percent)
@@ -87,6 +63,92 @@ uint16_t PercentToBitmap(uint8_t percent)
     return tempDisplayBit;
 }
 
+
+
+void DisplayCpuPercent(uint8_t percent)
+{
+    uint16_t bitmap = PercentToBitmap(percent);
+    tm1.display7Seg(0, bitmap % 0x100);
+    tm1.display7Seg(1, bitmap / 0x100);
+}
+
+void DisplayMemPercent(uint8_t percent)
+{
+    uint16_t bitmap = PercentToBitmap(percent);
+    tm1.display7Seg(2, bitmap % 0x100);
+    tm1.display7Seg(3, bitmap / 0x100);
+}
+
+void DisplayDisk0Percent(uint8_t percent)
+{
+    uint16_t bitmap = PercentToBitmap(percent);
+    tm1.display7Seg(4, bitmap % 0x100);
+    tm1.display7Seg(5, bitmap / 0x100);
+}
+
+void DisplayDisk1Percent(uint8_t percent)
+{
+    uint16_t bitmap = PercentToBitmap(percent);
+    tm1.display7Seg(6, bitmap % 0x100);
+    tm1.display7Seg(7, bitmap / 0x100);
+}
+
+void DisplayDiskRate(uint32_t byteRdPerSec, uint32_t byteWrPerSec)
+{
+    uint16_t displayRd;
+    uint16_t displayWr;
+    char displayStr[9];
+
+    if (byteRdPerSec < 1024 * 1024) {
+        displayRd = byteRdPerSec / 1024;
+        tm2.setLED(0, 0);
+        tm2.setLED(1, 1);
+    } else {
+        displayRd = byteRdPerSec / 1024 / 1024;
+        tm2.setLED(0, 1);
+        tm2.setLED(1, 0);
+    }
+    if (byteWrPerSec < 1024 * 1024) {
+        displayWr = byteWrPerSec / 1024;
+        tm2.setLED(2, 0);
+        tm2.setLED(3, 1);
+    } else {
+        displayWr = byteWrPerSec / 1024 / 1024;
+        tm2.setLED(2, 1);
+        tm2.setLED(3, 0);
+    }
+    sprintf(displayStr, "%4u%4u", displayRd, displayWr);
+    tm2.displayText(displayStr);
+}
+
+void DisplayNetRate(uint32_t byteTxPerSec, uint32_t byteRxPerSec)
+{
+    uint16_t displayTx;
+    uint16_t displayRx;
+    char displayStr[9];
+
+    if (byteTxPerSec < 1024 * 1024) {
+        displayTx = byteTxPerSec / 1024;
+        tm3.setLED(0, 0);
+        tm3.setLED(1, 1);
+    } else {
+        displayTx = byteTxPerSec / 1024 / 1024;
+        tm3.setLED(0, 1);
+        tm3.setLED(1, 0);
+    }
+    if (byteRxPerSec < 1024 * 1024) {
+        displayRx = byteRxPerSec / 1024;
+        tm3.setLED(2, 0);
+        tm3.setLED(3, 1);
+    } else {
+        displayRx = byteRxPerSec / 1024 / 1024;
+        tm3.setLED(2, 1);
+        tm3.setLED(3, 0);
+    }
+    sprintf(displayStr, "%4u%4u", displayTx, displayRx);
+    tm3.displayText(displayStr);
+}
+
 void loop()
 {
     if (WiFi.status() == WL_CONNECTED) {
@@ -102,9 +164,12 @@ void loop()
                     Serial.print(F("deserializeJson() failed: "));
                     Serial.println(jsonError.f_str());
                 } else {
-                    g_displayData[0] = PercentToBitmap(receivedData["CPU_PERCENT"]);
-                    g_displayData[1] = PercentToBitmap(receivedData["MEM_PERCENT"]);
-                    g_displayData[2] = PercentToBitmap(receivedData["DISK_PERCENT"]);
+                    DisplayCpuPercent(receivedData["CPU_PERCENT"]);
+                    DisplayMemPercent(receivedData["MEM_PERCENT"]);
+                    DisplayDisk0Percent(receivedData["DISK_PERCENT"]);
+                    DisplayDisk1Percent(receivedData["DISK1_PERCENT"]);
+                    DisplayDiskRate(receivedData["DISK_READ_RATE"], receivedData["DISK_WRITE_RATE"]);
+                    DisplayNetRate(receivedData["NET_SENT_RATE"], receivedData["NET_RECV_RATE"]);
                 }
             }
             http.end();
