@@ -11,6 +11,7 @@
         "vector": "cpp",
         "initializer_list": "cpp",
         "cmath": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "functional": "cpp"
     }
 }
