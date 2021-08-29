@@ -23,14 +23,14 @@ void StatusBlink::SetBlinkRate(BlinkRate rate)
         flipper.detach();
         digitalWrite(STATUS_LED_PIN, HIGH);
         break;
-    case BlinkRate::Rate8Hz:
-        flipper.attach(0.125, BlinkTask);        
+    case BlinkRate::Rate5Hz:
+        flipper.attach(0.1, BlinkTask);        
         break;
     case BlinkRate::Rate2Hz:
-        flipper.attach(0.5, BlinkTask);        
+        flipper.attach(0.25, BlinkTask);        
         break;
     case BlinkRate::Rate0_5Hz:
-        flipper.attach(2.0, BlinkTask);        
+        flipper.attach(1.0, BlinkTask);        
         break;
     }
 }

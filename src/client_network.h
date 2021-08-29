@@ -7,6 +7,7 @@
 class ClientNetwork
 {
 private:
+    String url;
     StaticJsonDocument<512> receivedData;
     HTTPClient* http;
     STATUS status;

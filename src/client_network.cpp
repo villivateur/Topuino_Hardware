@@ -1,19 +1,25 @@
 #include "client_network.h"
 #include "status_blink.h"
+#include "user_data.h"
+#include "func_button.h"
 
 extern StatusBlink* statusLed;
+extern UserData* userdataManager;
+extern FuncButton* funcButton;
 
 ClientNetwork::ClientNetwork()
-{
-    WiFi.begin("VVAILL", "channy161021");
+{    
+    WiFi.begin(userdataManager->GetWifiSsid(), userdataManager->GetWifiPasswd());
 
     statusLed->SetBlinkRate(StatusBlink::BlinkRate::Rate2Hz);
     while (WiFi.status() != WL_CONNECTED)
     {
-        delay(500);
+        delay(1000);
+        funcButton->Scan();
     }
     statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOff);
-
+    url = "http://iot.vvzero.com/topuino/getdata?UUID=";
+    url += userdataManager->GetDeviceUuid();
     status = FAIL;
 }
 
@@ -23,7 +29,7 @@ STATUS ClientNetwork::FetchNewData()
     if (WiFi.status() == WL_CONNECTED) {
         WiFiClient client;
         http = new HTTPClient();
-        if (http->begin(client, "http://iot.vvzero.com/topuino/getdata?UUID=1e788f28-7a5e-4888-96ff-71ab8b1876f8")) {
+        if (http->begin(client, url)) {
             if (http->GET() == HTTP_CODE_OK) {
                 if (deserializeJson(receivedData, http->getString().c_str()) == DeserializationError::Code::Ok) {
                     status = OK;

@@ -11,7 +11,7 @@ private:
 public:
     enum BlinkRate {
         RateAlwaysOn,
-        Rate8Hz,
+        Rate5Hz,
         Rate2Hz,
         Rate0_5Hz,
         RateAlwaysOff,
