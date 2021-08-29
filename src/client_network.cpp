@@ -1,19 +1,18 @@
 #include "client_network.h"
+#include "status_blink.h"
 
-void ClientNetwork::Init()
+extern StatusBlink* statusLed;
+
+ClientNetwork::ClientNetwork()
 {
     WiFi.begin("VVAILL", "channy161021");
 
-    Serial.print("Connecting");
+    statusLed->SetBlinkRate(StatusBlink::BlinkRate::Rate2Hz);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
-        Serial.print(".");
     }
-    Serial.println();
-
-    Serial.print("Connected, IP address: ");
-    Serial.println(WiFi.localIP());
+    statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOff);
 
     status = FAIL;
 }

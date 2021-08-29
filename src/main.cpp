@@ -2,18 +2,17 @@
 #include "display.h"
 #include "client_network.h"
 #include "monitor_items.h"
+#include "status_blink.h"
 
 DisplayPanel* displayPanel;
 ClientNetwork* netClient;
+StatusBlink* statusLed;
 
 void setup()
 {
-    Serial.begin(115200);
-    Serial.println();
-
+    statusLed = new StatusBlink();
     displayPanel = new DisplayPanel();
     netClient = new ClientNetwork();
-    netClient->Init();
 }
 
 void loop()

@@ -12,7 +12,7 @@ private:
     STATUS status;
 
 public:
-    void Init();
+    ClientNetwork();
     STATUS FetchNewData();
     uint8_t GetPercent(String name);
     uint32_t GetRate(String name);
