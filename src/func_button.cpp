@@ -16,6 +16,8 @@ void FuncButton::Scan()
 {
     if (digitalRead(FUNC_BTN) == PRESSED_STATUS) {
         pressedTime++;
+    } else {
+        pressedTime = 0;
     }
     if (pressedTime > 5) {
         userdataManager->EraseData();
