@@ -32,6 +32,8 @@ void setup()
 void loop()
 {
     delay(1000);
+    funcButton->Scan();
+    
     if (netClient->FetchNewData() != OK) {
         return;
     }
@@ -41,6 +43,4 @@ void loop()
     displayPanel->DisplayDisk1Percent(netClient->GetPercent(DISK1_PERCENT));
     displayPanel->DisplayDiskRate(netClient->GetRate(DISK_READ_RATE), netClient->GetRate(DISK_WRITE_RATE));
     displayPanel->DisplayNetRate(netClient->GetRate(NET_SENT_RATE), netClient->GetRate(NET_RECV_RATE));
-
-    funcButton->Scan();
 }
