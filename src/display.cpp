@@ -6,6 +6,7 @@
 #define CLOCK_TM 4      // clock = GPIO connected to clock line of module
 #define DIO_TM 5        // data = GPIO connected to data line of module
 #define HIGH_FREQ false //default false, If using a high freq CPU > ~100 MHZ set to true.
+#define LED_BRIGHTNESS 1
 
 DisplayPanel::DisplayPanel()
 {
@@ -16,6 +17,9 @@ DisplayPanel::DisplayPanel()
     percentLed->displayBegin();
     diskIoLed->displayBegin();
     netIoLed->displayBegin();
+    percentLed->brightness(LED_BRIGHTNESS);
+    diskIoLed->brightness(LED_BRIGHTNESS);
+    netIoLed->brightness(LED_BRIGHTNESS);
 }
 
 uint16_t DisplayPanel::PercentToBitmap(uint8_t percent)
