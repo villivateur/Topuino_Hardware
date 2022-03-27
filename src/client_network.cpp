@@ -2,6 +2,7 @@
 #include "status_blink.h"
 #include "user_data.h"
 #include "func_button.h"
+#include "factory_info.h"
 
 extern StatusBlink* statusLed;
 extern UserData* userdataManager;
@@ -18,8 +19,8 @@ ClientNetwork::ClientNetwork()
         funcButton->Scan();
     }
     statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOff);
-    url = "http://iot.vvzero.com/topuino/getdata?UUID=";
-    url += userdataManager->GetDeviceUuid();
+    url = "http://iot.vvzero.com/topuino/getdata?SN=";
+    url += DEVICE_SN;
     status = FAIL;
 }
 

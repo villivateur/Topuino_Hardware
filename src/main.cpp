@@ -34,13 +34,19 @@ void loop()
     delay(1000);
     funcButton->Scan();
     
-    if (netClient->FetchNewData() != OK) {
-        return;
+    if (netClient->FetchNewData() == OK) {
+        displayPanel->DisplayCpuPercent(netClient->GetPercent(CPU_PERCENT));
+        displayPanel->DisplayMemPercent(netClient->GetPercent(MEM_PERCENT));
+        displayPanel->DisplayDisk0Percent(netClient->GetPercent(DISK0_PERCENT));
+        displayPanel->DisplayDisk1Percent(netClient->GetPercent(DISK1_PERCENT));
+        displayPanel->DisplayDiskRate(netClient->GetRate(DISK_READ_RATE), netClient->GetRate(DISK_WRITE_RATE));
+        displayPanel->DisplayNetRate(netClient->GetRate(NET_SENT_RATE), netClient->GetRate(NET_RECV_RATE));
+    } else {
+        displayPanel->DisplayCpuPercent(0);
+        displayPanel->DisplayMemPercent(0);
+        displayPanel->DisplayDisk0Percent(0);
+        displayPanel->DisplayDisk1Percent(0);
+        displayPanel->DisplayDiskRate(0, 0);
+        displayPanel->DisplayNetRate(0, 0);
     }
-    displayPanel->DisplayCpuPercent(netClient->GetPercent(CPU_PERCENT));
-    displayPanel->DisplayMemPercent(netClient->GetPercent(MEM_PERCENT));
-    displayPanel->DisplayDisk0Percent(netClient->GetPercent(DISK0_PERCENT));
-    displayPanel->DisplayDisk1Percent(netClient->GetPercent(DISK1_PERCENT));
-    displayPanel->DisplayDiskRate(netClient->GetRate(DISK_READ_RATE), netClient->GetRate(DISK_WRITE_RATE));
-    displayPanel->DisplayNetRate(netClient->GetRate(NET_SENT_RATE), netClient->GetRate(NET_RECV_RATE));
 }

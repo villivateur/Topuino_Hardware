@@ -14,6 +14,4 @@ public:
     void SetWifiSsid(String ssid);
     String GetWifiPasswd();
     void SetWifiPasswd(String password);
-    String GetDeviceUuid();
-    void SetDeviceUuid(String uuid);
 };

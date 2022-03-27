@@ -10,7 +10,6 @@
 #define VALIDATION_OFFSET 0x00
 #define SSID_OFFSET 0x20
 #define PASSWORD_OFFSET 0x40
-#define UUID_OFFSET 0x60
 
 UserData::UserData()
 {
@@ -72,14 +71,4 @@ String UserData::GetWifiPasswd()
 void UserData::SetWifiPasswd(String password)
 {
     return WriteEepromString(password, PASSWORD_OFFSET);
-}
-
-String UserData::GetDeviceUuid()
-{
-    return ReadEepromString(UUID_OFFSET);
-}
-
-void UserData::SetDeviceUuid(String uuid)
-{
-    return WriteEepromString(uuid, UUID_OFFSET);
 }

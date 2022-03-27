@@ -29,10 +29,6 @@ static String configPage("\
             <label for='psw'><b>Wi-Fi Password</b></label>\
             <input type='password' name='psw' required>\
         </div>\
-        <div style='font-size: 20px; margin-bottom: 15px'>\
-            <label for='uuid'><b>Device ID</b></label>\
-            <input type='text' name='uuid' required>\
-        </div>\
         <div style='font-size: 20px'>\
             <button type='submit'>Commit</button>\
         </div>\
@@ -50,10 +46,9 @@ static void handleOnConnect()
 
 static void handleOnCommit()
 {
-    if (configManager->httpServer.hasArg("ssid") && configManager->httpServer.hasArg("psw") && configManager->httpServer.hasArg("uuid")) {
+    if (configManager->httpServer.hasArg("ssid") && configManager->httpServer.hasArg("psw")) {
         userdataManager->SetWifiSsid(configManager->httpServer.arg("ssid"));
         userdataManager->SetWifiPasswd(configManager->httpServer.arg("psw"));
-        userdataManager->SetDeviceUuid(configManager->httpServer.arg("uuid"));
         userdataManager->ConfirmData();
         configManager->httpServer.send(200, "text/html", "OK");
         delay(200);
