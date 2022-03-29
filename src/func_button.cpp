@@ -21,6 +21,7 @@ void FuncButton::Scan()
     }
     if (pressedTime > 5) {
         userdataManager->EraseData();
+        delay(1000);
         ESP.restart();
     }
 }
