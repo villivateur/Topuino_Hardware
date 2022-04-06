@@ -8,7 +8,7 @@
 
 Topuino 是一个桌面小摆件，可以实现通用服务器或计算机的数据监控，包括 CPU 占用、RAM 占用、两个硬盘的可用空间、硬盘读写速度、网络 IO 速率。
 
-![](https://img.vvzero.com/blog/Topuino-the-wonderful-Knickknack-for-server-monitoring/1.png)
+![](https://img.vvzero.com/ih/5d606a6c-926f-4690-8924-8931ec0f5f97.jpg)
 
 ## 为什么叫 Topuino
 
