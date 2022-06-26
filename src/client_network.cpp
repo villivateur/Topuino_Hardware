@@ -16,7 +16,6 @@ ClientNetwork::ClientNetwork()
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(1000);
-        funcButton->Scan();
     }
     statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOff);
     url = "http://iot.vvzero.com/topuino/getdata?SN=";

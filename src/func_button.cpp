@@ -6,22 +6,35 @@
 
 extern UserData* userdataManager;
 
-FuncButton::FuncButton()
-{
-    pinMode(FUNC_BTN, INPUT);
-    pressedTime = 0;
-}
+static int pressedTime;
 
-void FuncButton::Scan()
+static void Scan()
 {
     if (digitalRead(FUNC_BTN) == PRESSED_STATUS) {
         pressedTime++;
-    } else {
-        pressedTime = 0;
+        return;
     }
-    if (pressedTime > 5) {
+
+    int count = pressedTime;
+    pressedTime = 0;
+    
+    if (count >= 10) {
+        // Factory reset
         userdataManager->EraseData();
         delay(1000);
         ESP.restart();
+        return;
     }
+
+    if (count >= 2) {
+        return;
+    }
+}
+
+FuncButton::FuncButton()
+{    
+    pinMode(FUNC_BTN, INPUT);
+    pressedTime = 0;
+    
+    scanner.attach(1.0, Scan);
 }

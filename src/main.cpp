@@ -16,6 +16,8 @@ FuncButton* funcButton;
 
 void setup()
 {
+    Serial.begin(115200);
+    
     statusLed = new StatusBlink();
     userdataManager = new UserData();
     displayPanel = new DisplayPanel();
@@ -32,7 +34,6 @@ void setup()
 void loop()
 {
     delay(1000);
-    funcButton->Scan();
     
     if (netClient->FetchNewData() == OK) {
         displayPanel->DisplayCpuPercent(netClient->GetPercent(CPU_PERCENT));
