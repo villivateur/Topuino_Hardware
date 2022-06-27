@@ -20,13 +20,30 @@ static void Scan()
     
     if (count >= 10) {
         // Factory reset
-        userdataManager->EraseData();
+        userdataManager->EraseAllData();
         delay(1000);
         ESP.restart();
         return;
     }
 
     if (count >= 2) {
+        RunMode mode = userdataManager->GetRunMode();
+        switch (mode)
+        {
+        case RunMode_Usb:
+            userdataManager->SetRunMode(RunMode_Online);
+            break;
+        case RunMode_Online:
+            userdataManager->SetRunMode(RunMode_Local);
+            break;
+        case RunMode_Local:
+            userdataManager->SetRunMode(RunMode_Usb);
+            break;
+        default:
+            break;
+        }
+        delay(1000);
+        ESP.restart();
         return;
     }
 }

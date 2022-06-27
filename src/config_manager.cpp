@@ -3,7 +3,7 @@
 #include "user_data.h"
 
 #define SSID "Topuino"
-#define PASSWORD "vvzero.com"
+#define WIFI_PASSWORD "vvzero.com"
 
 extern StatusBlink* statusLed;
 extern ConfigManager* configManager;
@@ -49,7 +49,7 @@ static void handleOnCommit()
     if (configManager->httpServer.hasArg("ssid") && configManager->httpServer.hasArg("psw")) {
         userdataManager->SetWifiSsid(configManager->httpServer.arg("ssid"));
         userdataManager->SetWifiPasswd(configManager->httpServer.arg("psw"));
-        userdataManager->ConfirmData();
+        userdataManager->ConfirmWifiData();
         configManager->httpServer.send(200, "text/html", "OK");
         delay(200);
         ESP.restart();
@@ -66,7 +66,7 @@ httpServer(80)
 {
     statusLed->SetBlinkRate(StatusBlink::BlinkRate::Rate0_5Hz);
     WiFi.softAPConfig(localIp, gateway, subnet);
-    WiFi.softAP(SSID, PASSWORD);
+    WiFi.softAP(SSID, WIFI_PASSWORD);
     delay(100);
     
     httpServer.on("/", handleOnConnect);
