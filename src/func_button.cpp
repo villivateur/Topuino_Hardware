@@ -21,6 +21,7 @@ static void Scan()
     if (count >= 10) {
         // Factory reset
         userdataManager->EraseAllData();
+        Serial.end();
         delay(1000);
         ESP.restart();
         return;
@@ -42,6 +43,7 @@ static void Scan()
         default:
             break;
         }
+        Serial.end();
         delay(1000);
         ESP.restart();
         return;

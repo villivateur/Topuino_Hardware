@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "display.h"
 #include "client_network.h"
+#include "client_usb.h"
 #include "monitor_items.h"
 #include "status_blink.h"
 #include "config_manager.h"
@@ -9,6 +10,8 @@
 
 DisplayPanel* displayPanel;
 ClientNetwork* netClient;
+ClientUsb* usbClient;
+
 StatusBlink* statusLed;
 UserData* userdataManager;
 ConfigManager* configManager;
@@ -18,12 +21,11 @@ RunMode runMode;
 
 void RunMode_Usb_Setup()
 {
-    Serial.println("USB Mode Setup");
+    usbClient = new ClientUsb();
 }
 
 void RunMode_Online_Setup()
 {
-    Serial.println("Online Mode Setup");
     if (!userdataManager->WifiInfoValid()) {
         configManager = new ConfigManager();
         configManager->ProcessConfig();
@@ -34,7 +36,6 @@ void RunMode_Online_Setup()
 
 void RunMode_Local_Setup()
 {
-    Serial.println("Local Mode Setup");
 }
 
 void setup()
@@ -50,16 +51,20 @@ void setup()
 
     switch (runMode) {
         case RunMode_Usb:
+            displayPanel->DisplayNetRate(0, 0);
             RunMode_Usb_Setup();
             break;
         case RunMode_Online:
+            displayPanel->DisplayNetRate(1024, 1024);
             RunMode_Online_Setup();
             break;
         case RunMode_Local:
+            displayPanel->DisplayNetRate(2048, 2048);
             RunMode_Local_Setup();
             break;
         default:
             runMode = RunMode_Usb;
+            displayPanel->DisplayNetRate(0, 0);
             userdataManager->SetRunMode(runMode);
             RunMode_Usb_Setup();
             break;
@@ -68,12 +73,16 @@ void setup()
 
 void RunMode_Usb_Loop()
 {
-    Serial.println("USB Mode Loop");
+    displayPanel->DisplayCpuPercent(usbClient->data.cpuPercent);
+    displayPanel->DisplayMemPercent(usbClient->data.memPercent);
+    displayPanel->DisplayDisk0Percent(usbClient->data.disk0Percent);
+    displayPanel->DisplayDisk1Percent(usbClient->data.disk1Percent);
+    displayPanel->DisplayDiskRate(usbClient->data.diskReadRate, usbClient->data.diskWriteRate);
+    displayPanel->DisplayNetRate(usbClient->data.netSentRate, usbClient->data.netReceiveRate);
 }
 
 void RunMode_Online_Loop()
 {
-    Serial.println("Online Mode Loop");
     if (netClient->FetchNewData() == OK) {
         displayPanel->DisplayCpuPercent(netClient->GetPercent(CPU_PERCENT));
         displayPanel->DisplayMemPercent(netClient->GetPercent(MEM_PERCENT));
@@ -93,7 +102,6 @@ void RunMode_Online_Loop()
 
 void RunMode_Local_Loop()
 {
-    Serial.println("Local Mode Loop");
 }
 
 void loop()
