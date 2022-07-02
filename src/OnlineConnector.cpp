@@ -2,7 +2,7 @@
 #include "StatusLed.h"
 #include "UserData.h"
 #include "FuncButton.h"
-#include "factory_info.h"
+#include "FactoryInfo.h"
 
 extern StatusLed* statusLed;
 extern UserData* userdataManager;
