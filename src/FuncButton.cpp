@@ -1,12 +1,12 @@
-#include "func_button.h"
-#include "user_data.h"
-#include "status_blink.h"
+#include "FuncButton.h"
+#include "UserData.h"
+#include "StatusLed.h"
 
 #define FUNC_BTN 0
 #define PRESSED_STATUS LOW
 
 extern UserData* userdataManager;
-extern StatusBlink* statusLed;
+extern StatusLed* statusLed;
 
 static int pressedTime;
 
@@ -23,7 +23,7 @@ static void Scan()
     if (count >= 10) {
         // Factory reset
         userdataManager->EraseAllData();
-        statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOn);
+        statusLed->SetBlinkRate(StatusLed::BlinkRate::RateAlwaysOn);
         delay(1000);
         ESP.restart();
         return;
@@ -45,7 +45,7 @@ static void Scan()
         default:
             break;
         }
-        statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOn);
+        statusLed->SetBlinkRate(StatusLed::BlinkRate::RateAlwaysOn);
         delay(200);
         ESP.restart();
         return;

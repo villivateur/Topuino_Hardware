@@ -4,7 +4,7 @@
 #include <WiFiClient.h>
 #include <ArduinoJson.h>
 
-class ClientNetwork
+class OnlineConnector
 {
 private:
     String url;
@@ -13,7 +13,7 @@ private:
     STATUS status;
 
 public:
-    ClientNetwork();
+    OnlineConnector();
     STATUS FetchNewData();
     uint8_t GetPercent(String name);
     uint32_t GetRate(String name);

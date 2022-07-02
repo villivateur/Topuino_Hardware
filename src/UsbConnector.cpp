@@ -1,4 +1,4 @@
-#include "client_usb.h"
+#include "UsbConnector.h"
 
 static byte* dataBuff;
 
@@ -14,7 +14,7 @@ static void Receive()
     }
 }
 
-ClientUsb::ClientUsb()
+UsbConnector::UsbConnector()
 {
     memset(&data, 0, sizeof(UsbData));
     Serial.setTimeout(100);

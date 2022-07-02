@@ -1,12 +1,12 @@
-#include "config_manager.h"
-#include "status_blink.h"
-#include "user_data.h"
+#include "WifiConfigManager.h"
+#include "StatusLed.h"
+#include "UserData.h"
 
 #define SSID "Topuino"
 #define WIFI_PASSWORD "vvzero.com"
 
-extern StatusBlink* statusLed;
-extern ConfigManager* configManager;
+extern StatusLed* statusLed;
+extern WifiConfigManager* wifiConfigManager;
 extern UserData* userdataManager;
 
 static String configPage("\
@@ -41,31 +41,31 @@ static String configPage("\
 
 static void handleOnConnect()
 {
-    configManager->httpServer.send(200, "text/html", configPage);
+    wifiConfigManager->httpServer.send(200, "text/html", configPage);
 }
 
 static void handleOnCommit()
 {
-    if (configManager->httpServer.hasArg("ssid") && configManager->httpServer.hasArg("psw")) {
-        userdataManager->SetWifiSsid(configManager->httpServer.arg("ssid"));
-        userdataManager->SetWifiPasswd(configManager->httpServer.arg("psw"));
+    if (wifiConfigManager->httpServer.hasArg("ssid") && wifiConfigManager->httpServer.hasArg("psw")) {
+        userdataManager->SetWifiSsid(wifiConfigManager->httpServer.arg("ssid"));
+        userdataManager->SetWifiPasswd(wifiConfigManager->httpServer.arg("psw"));
         userdataManager->ConfirmWifiData();
-        configManager->httpServer.send(200, "text/html", "OK");
-        statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOn);
+        wifiConfigManager->httpServer.send(200, "text/html", "OK");
+        statusLed->SetBlinkRate(StatusLed::BlinkRate::RateAlwaysOn);
         delay(200);
         ESP.restart();
     } else {
-        configManager->httpServer.send(200, "text/html", "ERROR");
+        wifiConfigManager->httpServer.send(200, "text/html", "ERROR");
     }
 }
 
-ConfigManager::ConfigManager() :
+WifiConfigManager::WifiConfigManager() :
 localIp(192,168,1,1),
 gateway(192,168,1,1),
 subnet(255,255,255,0),
 httpServer(80)
 {
-    statusLed->SetBlinkRate(StatusBlink::BlinkRate::Rate0_5Hz);
+    statusLed->SetBlinkRate(StatusLed::BlinkRate::Rate0_5Hz);
     WiFi.softAPConfig(localIp, gateway, subnet);
     WiFi.softAP(SSID, WIFI_PASSWORD);
     delay(100);
@@ -76,7 +76,7 @@ httpServer(80)
     httpServer.begin();
 }
 
-void ConfigManager::ProcessConfig()
+void WifiConfigManager::ProcessConfig()
 {
     while (1) {
         httpServer.handleClient();

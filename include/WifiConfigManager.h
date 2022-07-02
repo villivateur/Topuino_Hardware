@@ -2,7 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-class ConfigManager
+class WifiConfigManager
 {
 private:
     IPAddress localIp;
@@ -10,6 +10,6 @@ private:
     IPAddress subnet;
 public:
     ESP8266WebServer httpServer;
-    ConfigManager();
+    WifiConfigManager();
     void ProcessConfig();
 };

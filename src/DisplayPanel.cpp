@@ -1,4 +1,4 @@
-#include "display.h"
+#include "DisplayPanel.h"
 
 #define STROBE_TM1 13
 #define STROBE_TM2 12 // strobe = GPIO connected to strobe line of module

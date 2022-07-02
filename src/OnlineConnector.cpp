@@ -1,29 +1,29 @@
-#include "client_network.h"
-#include "status_blink.h"
-#include "user_data.h"
-#include "func_button.h"
+#include "OnlineConnector.h"
+#include "StatusLed.h"
+#include "UserData.h"
+#include "FuncButton.h"
 #include "factory_info.h"
 
-extern StatusBlink* statusLed;
+extern StatusLed* statusLed;
 extern UserData* userdataManager;
 extern FuncButton* funcButton;
 
-ClientNetwork::ClientNetwork()
+OnlineConnector::OnlineConnector()
 {    
     WiFi.begin(userdataManager->GetWifiSsid(), userdataManager->GetWifiPasswd());
 
-    statusLed->SetBlinkRate(StatusBlink::BlinkRate::Rate2Hz);
+    statusLed->SetBlinkRate(StatusLed::BlinkRate::Rate2Hz);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(1000);
     }
-    statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOff);
+    statusLed->SetBlinkRate(StatusLed::BlinkRate::RateAlwaysOff);
     url = "http://iot.vvzero.com/topuino/getdata?SN=";
     url += DEVICE_SN;
     status = FAIL;
 }
 
-STATUS ClientNetwork::FetchNewData()
+STATUS OnlineConnector::FetchNewData()
 {
     status = FAIL;
     if (WiFi.status() == WL_CONNECTED) {
@@ -42,12 +42,12 @@ STATUS ClientNetwork::FetchNewData()
     return status;
 }
 
-uint8_t ClientNetwork::GetPercent(String name)
+uint8_t OnlineConnector::GetPercent(String name)
 {
     return status == OK ? receivedData[name] : 0;
 }
 
-uint32_t ClientNetwork::GetRate(String name)
+uint32_t OnlineConnector::GetRate(String name)
 {
     return status == OK ? receivedData[name] : 0;
 }

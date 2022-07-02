@@ -3,7 +3,7 @@
 
 #define STATUS_LED_PIN 2
 
-class StatusBlink
+class StatusLed
 {
 private:
     Ticker flipper;
@@ -16,6 +16,6 @@ public:
         Rate0_5Hz,
         RateAlwaysOff,
     };
-    StatusBlink();
+    StatusLed();
     void SetBlinkRate(BlinkRate rate);
 };

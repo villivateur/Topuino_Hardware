@@ -13,10 +13,10 @@ struct UsbData
     uint32_t netReceiveRate;
 };
 
-class ClientUsb
+class UsbConnector
 {
 public:
-    ClientUsb();
+    UsbConnector();
     UsbData data;
 
 private:

@@ -1,6 +1,6 @@
-#include "status_blink.h"
+#include "StatusLed.h"
 
-StatusBlink::StatusBlink()
+StatusLed::StatusLed()
 {
     pinMode(STATUS_LED_PIN, OUTPUT);
     digitalWrite(STATUS_LED_PIN, HIGH);
@@ -11,7 +11,7 @@ static void BlinkTask()
     digitalWrite(STATUS_LED_PIN, !digitalRead(STATUS_LED_PIN));     // set pin to the opposite state
 }
 
-void StatusBlink::SetBlinkRate(BlinkRate rate)
+void StatusLed::SetBlinkRate(BlinkRate rate)
 {
     switch (rate)
     {

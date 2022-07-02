@@ -1,36 +1,36 @@
 #include <Arduino.h>
-#include "display.h"
-#include "client_network.h"
-#include "client_usb.h"
-#include "monitor_items.h"
-#include "status_blink.h"
-#include "config_manager.h"
-#include "user_data.h"
-#include "func_button.h"
+#include "DisplayPanel.h"
+#include "OnlineConnector.h"
+#include "UsbConnector.h"
+#include "MonitorItems.h"
+#include "StatusLed.h"
+#include "WifiConfigManager.h"
+#include "UserData.h"
+#include "FuncButton.h"
 
 DisplayPanel* displayPanel;
-ClientNetwork* netClient;
-ClientUsb* usbClient;
+OnlineConnector* onlineConnector;
+UsbConnector* usbConnector;
 
-StatusBlink* statusLed;
+StatusLed* statusLed;
 UserData* userdataManager;
-ConfigManager* configManager;
+WifiConfigManager* wifiConfigManager;
 FuncButton* funcButton;
 
 RunMode runMode;
 
 void RunMode_Usb_Setup()
 {
-    usbClient = new ClientUsb();
+    usbConnector = new UsbConnector();
 }
 
 void RunMode_Online_Setup()
 {
     if (!userdataManager->WifiInfoValid()) {
-        configManager = new ConfigManager();
-        configManager->ProcessConfig();
+        wifiConfigManager = new WifiConfigManager();
+        wifiConfigManager->ProcessConfig();
     } else {
-        netClient = new ClientNetwork();
+        onlineConnector = new OnlineConnector();
     }
 }
 
@@ -42,7 +42,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    statusLed = new StatusBlink();
+    statusLed = new StatusLed();
     userdataManager = new UserData();
     displayPanel = new DisplayPanel();
     funcButton = new FuncButton();
@@ -73,23 +73,23 @@ void setup()
 
 void RunMode_Usb_Loop()
 {
-    displayPanel->DisplayCpuPercent(usbClient->data.cpuPercent);
-    displayPanel->DisplayMemPercent(usbClient->data.memPercent);
-    displayPanel->DisplayDisk0Percent(usbClient->data.disk0Percent);
-    displayPanel->DisplayDisk1Percent(usbClient->data.disk1Percent);
-    displayPanel->DisplayDiskRate(usbClient->data.diskReadRate, usbClient->data.diskWriteRate);
-    displayPanel->DisplayNetRate(usbClient->data.netSentRate, usbClient->data.netReceiveRate);
+    displayPanel->DisplayCpuPercent(usbConnector->data.cpuPercent);
+    displayPanel->DisplayMemPercent(usbConnector->data.memPercent);
+    displayPanel->DisplayDisk0Percent(usbConnector->data.disk0Percent);
+    displayPanel->DisplayDisk1Percent(usbConnector->data.disk1Percent);
+    displayPanel->DisplayDiskRate(usbConnector->data.diskReadRate, usbConnector->data.diskWriteRate);
+    displayPanel->DisplayNetRate(usbConnector->data.netSentRate, usbConnector->data.netReceiveRate);
 }
 
 void RunMode_Online_Loop()
 {
-    if (netClient->FetchNewData() == OK) {
-        displayPanel->DisplayCpuPercent(netClient->GetPercent(CPU_PERCENT));
-        displayPanel->DisplayMemPercent(netClient->GetPercent(MEM_PERCENT));
-        displayPanel->DisplayDisk0Percent(netClient->GetPercent(DISK0_PERCENT));
-        displayPanel->DisplayDisk1Percent(netClient->GetPercent(DISK1_PERCENT));
-        displayPanel->DisplayDiskRate(netClient->GetRate(DISK_READ_RATE), netClient->GetRate(DISK_WRITE_RATE));
-        displayPanel->DisplayNetRate(netClient->GetRate(NET_SENT_RATE), netClient->GetRate(NET_RECV_RATE));
+    if (onlineConnector->FetchNewData() == OK) {
+        displayPanel->DisplayCpuPercent(onlineConnector->GetPercent(CPU_PERCENT));
+        displayPanel->DisplayMemPercent(onlineConnector->GetPercent(MEM_PERCENT));
+        displayPanel->DisplayDisk0Percent(onlineConnector->GetPercent(DISK0_PERCENT));
+        displayPanel->DisplayDisk1Percent(onlineConnector->GetPercent(DISK1_PERCENT));
+        displayPanel->DisplayDiskRate(onlineConnector->GetRate(DISK_READ_RATE), onlineConnector->GetRate(DISK_WRITE_RATE));
+        displayPanel->DisplayNetRate(onlineConnector->GetRate(NET_SENT_RATE), onlineConnector->GetRate(NET_RECV_RATE));
     } else {
         displayPanel->DisplayCpuPercent(0);
         displayPanel->DisplayMemPercent(0);
