@@ -51,6 +51,7 @@ static void handleOnCommit()
         userdataManager->SetWifiPasswd(configManager->httpServer.arg("psw"));
         userdataManager->ConfirmWifiData();
         configManager->httpServer.send(200, "text/html", "OK");
+        statusLed->SetBlinkRate(StatusBlink::BlinkRate::RateAlwaysOn);
         delay(200);
         ESP.restart();
     } else {
