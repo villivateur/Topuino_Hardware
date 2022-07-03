@@ -2,6 +2,7 @@
 #include "DisplayPanel.h"
 #include "OnlineConnector.h"
 #include "UsbConnector.h"
+#include "LocalConnector.h"
 #include "MonitorItems.h"
 #include "StatusLed.h"
 #include "WifiConfigManager.h"
@@ -9,13 +10,14 @@
 #include "FuncButton.h"
 
 DisplayPanel* displayPanel;
-OnlineConnector* onlineConnector;
-UsbConnector* usbConnector;
-
 StatusLed* statusLed;
 UserData* userdataManager;
 WifiConfigManager* wifiConfigManager;
 FuncButton* funcButton;
+
+OnlineConnector* onlineConnector;
+UsbConnector* usbConnector;
+LocalConnector* localConnector;
 
 RunMode runMode;
 
@@ -36,6 +38,12 @@ void RunMode_Online_Setup()
 
 void RunMode_Local_Setup()
 {
+    if (!userdataManager->WifiInfoValid()) {
+        wifiConfigManager = new WifiConfigManager();
+        wifiConfigManager->ProcessConfig();
+    } else {
+        localConnector = new LocalConnector();
+    }
 }
 
 void setup()
@@ -102,6 +110,14 @@ void RunMode_Online_Loop()
 
 void RunMode_Local_Loop()
 {
+    localConnector->FetchNewData();
+
+    displayPanel->DisplayCpuPercent(localConnector->data->cpuPercent);
+    displayPanel->DisplayMemPercent(localConnector->data->memPercent);
+    displayPanel->DisplayDisk0Percent(localConnector->data->disk0Percent);
+    displayPanel->DisplayDisk1Percent(localConnector->data->disk1Percent);
+    displayPanel->DisplayDiskRate(localConnector->data->diskReadRate, localConnector->data->diskWriteRate);
+    displayPanel->DisplayNetRate(localConnector->data->netSentRate, localConnector->data->netReceiveRate);
 }
 
 void loop()
