@@ -10,7 +10,7 @@
 
 Topuino 是一个桌面小摆件，可以显示服务器或电脑的项性能监控数据，包括 CPU 占用、RAM 占用、两个硬盘的可用空间、硬盘读写速度、网络 IO 速率。
 
-![](https://img.vvzero.com/ih/5d606a6c-926f-4690-8924-8931ec0f5f97.jpg)
+![](doc/sample.png)
 
 ## 为什么叫 Topuino
 
